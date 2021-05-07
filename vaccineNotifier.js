@@ -17,11 +17,13 @@ To close the app, run: pm2 stop vaccineNotifier.js && pm2 delete vaccineNotifier
 const PINCODE = process.env.PINCODE
 const EMAIL = process.env.EMAIL
 const AGE = process.env.AGE
+const RECEIPIENT = process.env.RECEIPIENT
 
 async function main(){
     try {
         cron.schedule('* * * * *', async () => {
              await checkAvailability();
+            //await notifyMeNav();
         });
     } catch (e) {
         console.log('an error occured: ' + JSON.stringify(e, null, 2));
@@ -40,7 +42,7 @@ async function checkAvailability() {
 function getSlotsForDate(DATE) {
     let config = {
         method: 'get',
-        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin?pincode=' + PINCODE + '&date=' + DATE,
+        url: 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin?pincode=' + PINCODE + '&date=' + DATE,
         headers: {
             'accept': 'application/json',
             'Accept-Language': 'hi_IN'
@@ -66,6 +68,16 @@ async function
 notifyMe(validSlots){
     let slotDetails = JSON.stringify(validSlots, null, '\t');
     notifier.sendEmail(EMAIL, 'VACCINE AVAILABLE', slotDetails, (err, result) => {
+        if(err) {
+            console.error({err});
+        }
+    })
+};
+
+ async function
+notifyMeNav(){
+    let slotDetails = "USHA"
+    notifier.sendEmail(RECEIPIENT, 'VACCINE AVAILABLE', slotDetails, (err, result) => {
         if(err) {
             console.error({err});
         }
